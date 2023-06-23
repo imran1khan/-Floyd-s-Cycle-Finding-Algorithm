@@ -1,21 +1,22 @@
 // C++ program to implement
 // the above approach
-#include <bits/stdc++.h>
+#include<iostream>
 using namespace std;
- 
+
 class Node {
 public:
     int data;
     Node* next;
- 
+
     Node(int data)
     {
         this->data = data;
         next = NULL;
     }
 };
- 
-// initialize a new head for the linked list
+
+// initialize a new head
+// for the linked list
 Node* head = NULL;
 class Linkedlist {
 public:
@@ -30,30 +31,66 @@ public:
             head = newNode;
         }
     }
- 
-    // detect if there is a loop
-    // in the linked list
-    bool detectLoop(Node* head)// it's going to work without passing head noad
-    {
-        Node* fast=head;
-        Node* slow=head;
-        while(fast->next!=NULL && fast!=NULL)
+
+    Node* detectloop()    // detect if there is a loop
+    {                       // in the linked list
+        if (head == NULL)
         {
-            slow=slow->next;
-            fast=fast->next;
-            if(fast->next!=NULL)
+            return NULL;
+        }
+        Node* slow = head;
+        Node* fast = head;
+        while (fast!=NULL && fast->next!=NULL)
+        {
+            slow = slow->next;
+            fast = fast->next;
+            if (fast->next!=NULL)
             {
-                fast=fast->next;
+                fast = fast->next;
             }
-            if(fast==slow)
+            if (slow==fast)
             {
-                return true;
+                return slow;
             }
         }
-        return false;
+        return NULL;
+    }
+    Node* detectLoopindex()
+    {
+        //If link list is empty, there are no loop.
+        //If only one element is found in link list, there are no loop.
+        if (head == NULL || head->next == NULL) {
+            return NULL;
+        }
+        Node* index = detectloop();
+        if (index==NULL)
+        {
+            return NULL;
+        }
+        Node* start = head;
+        while (start!=index)
+        {
+            index = index->next;
+            start = start->next;
+        }
+        return start;
+    }
+    void removeloop()
+    {
+        Node* start = detectLoopindex();
+        if (start == NULL)
+        {
+            return;
+        }
+        Node* preindex = start;
+        while (start != preindex->next)
+        {
+            preindex= preindex->next;
+        }
+        preindex->next = NULL;
     }
 };
- 
+
 int main()
 {
     Linkedlist l1;
@@ -63,23 +100,22 @@ int main()
     l1.insert(30);
     l1.insert(40);
     l1.insert(50);
- 
+
     // adding a loop for the sake
     // of this example
     Node* temp = head;
     while (temp->next != NULL)
         temp = temp->next;
- 
-    temp->next = head;
- 
     // loop added;
- 
-    if (l1.detectLoop())
-        cout << "Loop exists in the"
-             << " Linked List" << endl;
-    else
-        cout << "Loop does not exists "
-             << "in the Linked List" << endl;
- 
+    temp->next = head;
+    l1.removeloop(); // in here we can remove the loop
+    Node* loopStart = l1.detectLoopindex();
+    if (loopStart == NULL)
+        cout << "Loop does not exists" << endl;
+    else {
+        cout << "Loop does exists and starts from "
+            << loopStart->data << endl;
+    }
+
     return 0;
 }
